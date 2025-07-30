@@ -1,0 +1,2 @@
+# SzCzOs
+ Awful Operating System
