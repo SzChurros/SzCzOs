@@ -3,6 +3,38 @@
 
 # Compilation
 
+> info: If you want platforms added - make a pull request.
+
+## Arch Linux
+
+### Packages
+
+```bash
+sudo pacman -Sy git gcc nasm qemu-desktop linux-headers binutils grub xorriso
+```
+
+### Downloading the source code
+
+```bash
+git clone https://github.com/SzChurros/SzCzOs.git
+cd SzCzOs
+```
+
+### Building
+
+```bash
+./build.sh
+./disk.sh
+```
+
+### Running
+ 
+```bash
+./test.sh
+```
+
+# Extra
+
 ## Star History
 
 <a href="https://www.star-history.com/#SzChurros/SzCzOs&Date">
