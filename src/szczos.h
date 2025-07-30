@@ -40,4 +40,7 @@ void CLEAR_SCREEN();
 void csprint(const char *string, uint8 color);
 void putchar(uint8 chr, uint8 color);
 
+void reboot();
+void shutdown();
+
 #endif

@@ -1,16 +1,18 @@
 #include "szczos.h"
 #include "drivers/ps2.h"
 #include "keyboard_layouts.h"
+#include "str.h"
 
 void kernel_main() {
     cls();
 
-    sprint("Welcome To \\\x04Sz\\\x02""Cz\\\x01OS\\\x0f!\n\n> ");
+    sprint("Welcome To \\\x04Sz\\\x02""Cz\\\x01OS\\\x0f!\ntype help to see built-in commands\n\n> ");
 
     moveCursorToVGApos();
 
     uint16 typedchars = 0;
     char command[256];
+    char* tokens[8];
 
     for (uint16 i = 0; i <= 255; i++)
     {
@@ -51,7 +53,41 @@ void kernel_main() {
             }
             else if (c == '\n')
             {
-                sprint("\n> ");
+                strtok(command, tokens, 8, 256);
+                if (strcmp(tokens[0], "clear") == 0)
+                {
+                    cls();
+                    setVGAx(0);
+                    setVGAy(0);
+                    sprint("> ");
+                }
+                else if (strcmp(tokens[0], "help") == 0) 
+                {
+                    sprint("\n help - help menu");
+                    sprint("\n clear - clear screen");
+                    sprint("\n power [reboot, off] - reboots or turns off the pc (depending on the flag)");
+                    sprint("\n> ");
+                }
+                else if (strcmp(tokens[0], "power") == 0)
+                {
+                    if (strcmp(tokens[1], "reboot") == 0)
+                    {
+                        reboot();
+                    }
+                    else if (strcmp(tokens[1], "off") == 0)
+                    {
+                        shutdown();
+                    }
+                    else
+                    {
+                        sprint("\ninvalid syntax; use help to know flags");
+                        sprint("\n>");
+                    }
+                }
+                else
+                {
+                    sprint("\ncommand not found\n>");
+                }
                 typedchars = 0;
                 for (uint16 i = 0; i <= 255; i++)
                 {

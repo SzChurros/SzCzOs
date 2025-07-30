@@ -197,3 +197,14 @@ void putchar(uint8 chr, uint8 color)
         break;
         }
 }
+
+void reboot() {
+    outb(0x64, 0xFE);
+    asm volatile ("hlt");
+}
+
+void shutdown() {
+    outw(0x604, 0x2000);
+    outw(0x4004, 0x3400);
+    asm volatile ("hlt");
+}

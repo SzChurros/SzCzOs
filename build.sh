@@ -1,34 +1,47 @@
 #!/bin/sh
 
-rm -rf build
+# ---- Config ----
+KERNEL_NAME="szczos"
+ISO_NAME="szczos.iso"
+BUILD_DIR="build"
+GRUB_CFG="grub.cfg"
 
+# ---- Clean ----
+rm -rf "$BUILD_DIR" || exit 1
 echo "Removed old build dir..."
 
-mkdir build
-mkdir build/graphics
-mkdir build/drivers
+# ---- Setup ----
+mkdir -p "$BUILD_DIR"/{graphics,drivers,boot/grub} || exit 1
+echo "Created folder structure..."
 
-echo "Redid folder structure..."
+# ---- Compile ----
+echo "Compiling..."
+nasm -f elf32 src/boot.s -o "$BUILD_DIR"/boot.o || exit 1
+gcc -m32 -ffreestanding -nostdlib -Wall -Wextra -c \
+    src/kernel.c -o "$BUILD_DIR"/kernel.o || exit 1
+gcc -m32 -ffreestanding -nostdlib -Wall -Wextra -c \
+    src/szczos.c -o "$BUILD_DIR"/szczos.o || exit 1
+gcc -m32 -ffreestanding -nostdlib -Wall -Wextra -c \
+    src/asmc.c -o "$BUILD_DIR"/asmc.o || exit 1
+gcc -m32 -ffreestanding -nostdlib -Wall -Wextra -c \
+    src/graphics/vga_colors.c -o "$BUILD_DIR"/graphics/vga_colors.o || exit 1
+gcc -m32 -ffreestanding -nostdlib -Wall -Wextra -c \
+    src/drivers/ps2.c -o "$BUILD_DIR"/drivers/ps2.o || exit 1
 
-echo Compiling...
-nasm -f elf32 src/boot.s -o build/boot.o
-gcc -m32 -ffreestanding -nostdlib -c src/kernel.c -o build/kernel.o
-gcc -m32 -ffreestanding -nostdlib -c src/szczos.c -o build/szczos.o
-gcc -m32 -ffreestanding -nostdlib -c src/asmc.c -o build/asmc.o
-gcc -m32 -ffreestanding -nostdlib -c src/shell.c -o build/shell.o
-gcc -m32 -ffreestanding -nostdlib -c src/graphics/vga_colors.c -o build/graphics/vga_colors.o
-gcc -m32 -ffreestanding -nostdlib -c src/drivers/ps2.c -o build/drivers/ps2.o
+# ---- Link ----
+echo "Linking..."
+ld -m elf_i386 -T linker.ld -o "$BUILD_DIR"/kernel.bin \
+    "$BUILD_DIR"/boot.o \
+    "$BUILD_DIR"/kernel.o \
+    "$BUILD_DIR"/szczos.o \
+    "$BUILD_DIR"/graphics/vga_colors.o \
+    "$BUILD_DIR"/asmc.o \
+    "$BUILD_DIR"/drivers/ps2.o || exit 1
 
-echo Linking...
-ld -m elf_i386 -T linker.ld -o build/kernel.bin build/boot.o build/kernel.o build/szczos.o build/graphics/vga_colors.o build/asmc.o build/drivers/ps2.o build/shell.o
+# ---- ISO ----
+echo "Making the ISO..."
+cp "$BUILD_DIR"/kernel.bin "$BUILD_DIR"/boot/ || exit 1
+cp "$GRUB_CFG" "$BUILD_DIR"/boot/grub/ || exit 1
+grub-mkrescue -o "$BUILD_DIR"/"$ISO_NAME" "$BUILD_DIR" || exit 1
 
-
-echo 'Making the iso...'
-mkdir -p build/boot/grub
-cp build/kernel.bin build/boot/
-cp grub.cfg build/boot/grub/
-grub-mkrescue -o build/szczos.iso build
-
-
-
-echo Done!
+echo "Done! ISO: $BUILD_DIR/$ISO_NAME"
