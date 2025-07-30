@@ -1,6 +1,8 @@
 # SzCzOs
  Awful Operating System (it is still not an OS technically as it can't run programs)
 
+# Compilation
+
 ## Star History
 
 <a href="https://www.star-history.com/#SzChurros/SzCzOs&Date">
