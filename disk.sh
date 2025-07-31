@@ -12,5 +12,6 @@ echo "Removed old disk dir..."
 
 # ---- Create Disk Image ----
 echo "Creating disk image..."
-dd if=/dev/zero of="$DISK_DIR/$DISK_NAME" bs=512 count=32768  # 16MB disk (adjust size as needed)
+mkdir $DISK_DIR
+dd if=/dev/zero of="$DISK_DIR/$DISK_NAME" bs=512 count=131072
 echo "Disk image created: $DISK_DIR/$DISK_NAME"

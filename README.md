@@ -10,7 +10,7 @@
 ### Packages
 
 ```bash
-sudo pacman -Sy git gcc nasm qemu-desktop linux-headers binutils grub xorriso
+sudo pacman -Sy git gcc nasm qemu-desktop linux-headers binutils grub xorriso coreutils
 ```
 
 ### Downloading the source code
