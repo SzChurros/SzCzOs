@@ -2,5 +2,5 @@
 
 qemu-system-i386 \
   -cdrom build/szczos.iso \
-  -hda build/disk.img \
+  -hda disk/disk.img \
   -boot d  # Boot from CD first
